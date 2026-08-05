@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http" 
-	"strconv" 
 	"encoding/json"
+	"net/http"
+	"strconv"
 )
 
-func handler(){
+func setupRoutes() *http.ServeMux {
 
 	h := &Handler{}
 
@@ -16,25 +16,26 @@ func handler(){
 	mux.HandleFunc("POST /tasks", h.create)
 	mux.HandleFunc("PUT /tasks/{id}", h.update)
 	mux.HandleFunc("DELETE /tasks/{id}", h.delete)
+
+	return mux
 }
 
-type Handler struct{
-
+type Handler struct {
 }
 
-func (h Handler) getAll(w http.ResponseWriter, r *http.Request){
+func (h Handler) getAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(tasks)
 }
 
-func (h Handler) get(w http.ResponseWriter, r *http.Request){
+func (h Handler) get(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 
-	if err != nil{
-			http.Error(w, "Task ID is not a valid integer", http.StatusBadRequest)
-			return
-		}
+	if err != nil {
+		http.Error(w, "Task ID is not a valid integer", http.StatusBadRequest)
+		return
+	}
 
 	for _, task := range tasks {
 		if task.ID == id {
@@ -42,11 +43,11 @@ func (h Handler) get(w http.ResponseWriter, r *http.Request){
 			return
 		}
 	}
-		http.Error(w, "Task not found", http.StatusNotFound)
-				return
-	}
+	http.Error(w, "Task not found", http.StatusNotFound)
+	return
+}
 
-func (h Handler) create(w http.ResponseWriter, r *http.Request){
+func (h Handler) create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var newTask Task
 	json.NewDecoder(r.Body).Decode(&newTask)
@@ -68,24 +69,24 @@ func (h Handler) create(w http.ResponseWriter, r *http.Request){
 		}
 	}
 	newTask.ID = maxID + 1
-	
+
 	tasks = append(tasks, newTask)
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(newTask)
 }
 
-func (h Handler) update(w http.ResponseWriter, r *http.Request){
+func (h Handler) update(w http.ResponseWriter, r *http.Request) {
 	var updatedTask Task
 	json.NewDecoder(r.Body).Decode(&updatedTask)
 
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 
-	if err != nil{
-			http.Error(w, "Task ID is not a valid integer", http.StatusBadRequest)
-			return
-		}
+	if err != nil {
+		http.Error(w, "Task ID is not a valid integer", http.StatusBadRequest)
+		return
+	}
 
 	if updatedTask.Title == "" {
 		http.Error(w, "Title are required", http.StatusBadRequest)
@@ -101,23 +102,23 @@ func (h Handler) update(w http.ResponseWriter, r *http.Request){
 	for i, task := range tasks {
 		if task.ID == id {
 			tasks[i] = updatedTask
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(updatedTask)
 			return
-			}
 		}
-		http.Error(w, "Task not found", http.StatusNotFound)
 	}
-		
+	http.Error(w, "Task not found", http.StatusNotFound)
+}
 
-func (h Handler) delete(w http.ResponseWriter, r *http.Request){
+func (h Handler) delete(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)
 
-	if err != nil{
-			http.Error(w, "Task ID is not a valid integer", http.StatusBadRequest)
-			return
-		}
+	if err != nil {
+		http.Error(w, "Task ID is not a valid integer", http.StatusBadRequest)
+		return
+	}
 
 	for i, task := range tasks {
 		if task.ID == id {
@@ -126,5 +127,19 @@ func (h Handler) delete(w http.ResponseWriter, r *http.Request){
 			return
 		}
 	}
-		http.Error(w, "Task not found", http.StatusNotFound)
+	http.Error(w, "Task not found", http.StatusNotFound)
+}
+
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
