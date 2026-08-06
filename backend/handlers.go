@@ -56,7 +56,7 @@ func (h Handler) create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Title are required", http.StatusBadRequest)
 		return
 	}
-	if newTask.Status != "A FAZER" && newTask.Status != "EM PROGRESSO" && newTask.Status != "CONCLUÍDAS" {
+	if newTask.Status != "A Fazer" && newTask.Status != "Em Progresso" && newTask.Status != "Concluídas" {
 		http.Error(w, "Status are invalid", http.StatusBadRequest)
 		return
 	}
@@ -92,7 +92,7 @@ func (h Handler) update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Title are required", http.StatusBadRequest)
 		return
 	}
-	if updatedTask.Status != "A FAZER" && updatedTask.Status != "EM PROGRESSO" && updatedTask.Status != "CONCLUÍDAS" {
+	if updatedTask.Status != "A Fazer" && updatedTask.Status != "Em Progresso" && updatedTask.Status != "Concluídas" {
 		http.Error(w, "Status are invalid", http.StatusBadRequest)
 		return
 	}
