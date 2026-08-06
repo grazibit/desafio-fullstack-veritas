@@ -1,11 +1,10 @@
 package main
 
-	type Task struct {
+type Task struct {
+	ID          int    `json:"ID"`
+	Title       string `json:"Title"`
+	Description string `json:"Description"`
+	Status      string `json:"Status"`
+}
 
-		ID int
-		Title string
-		Description string
-		Status string
-	}
-
-	var tasks []Task
+var tasks []Task
