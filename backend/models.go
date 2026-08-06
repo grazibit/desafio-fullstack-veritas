@@ -24,7 +24,12 @@ func loadTasks() {
 		tasks = []Task{}
 		return
 	}
-	json.Unmarshal(file, &tasks)
+	err = json.Unmarshal(file, &tasks)
+	if err != nil {
+		fmt.Println("Erro ao carregar tarefas:", err)
+		tasks = []Task{}
+		return
+	}
 	fmt.Println("Iniciando servidor... Tarefas carregadas")
 }
 
@@ -34,5 +39,8 @@ func saveTasks() {
 		fmt.Println("Erro ao converter tarefas para JSON:", err)
 		return
 	}
-	os.WriteFile(fileName, data, 0644)
+	err = os.WriteFile(fileName, data, 0644)
+	if err != nil {
+		fmt.Println("Erro ao salvar tarefas:", err)
+	}
 }

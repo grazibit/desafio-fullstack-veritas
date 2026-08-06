@@ -50,7 +50,11 @@ func (h Handler) get(w http.ResponseWriter, r *http.Request) {
 func (h Handler) create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var newTask Task
-	json.NewDecoder(r.Body).Decode(&newTask)
+	err := json.NewDecoder(r.Body).Decode(&newTask)
+	if err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
 
 	if newTask.Title == "" {
 		http.Error(w, "Title are required", http.StatusBadRequest)
@@ -79,7 +83,11 @@ func (h Handler) create(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) update(w http.ResponseWriter, r *http.Request) {
 	var updatedTask Task
-	json.NewDecoder(r.Body).Decode(&updatedTask)
+	err := json.NewDecoder(r.Body).Decode(&updatedTask)
+	if err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
 
 	idStr := r.PathValue("id")
 	id, err := strconv.Atoi(idStr)

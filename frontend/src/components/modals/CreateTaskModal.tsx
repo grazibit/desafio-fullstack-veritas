@@ -12,8 +12,14 @@ interface CreateTaskModalProps {
 function CreateTaskModal({ show, handleClose, handleSave }: CreateTaskModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [titleError, setTitleError] = useState(false);
 
   const onConfirm = () => {
+    if (!title.trim()) {
+      setTitleError(true);
+      return;
+    }
+    setTitleError(false);
     handleSave(title, description);
     setTitle('');
     setDescription('');
@@ -32,9 +38,14 @@ function CreateTaskModal({ show, handleClose, handleSave }: CreateTaskModalProps
               type="text" 
               placeholder="Digite o título da tarefa..." 
               value={title}
-              onChange={(e) => setTitle(e.target.value)} 
+              onChange={(e) => { 
+                setTitle(e.target.value);
+                setTitleError(false);
+              }}
+              isInvalid={titleError}
               autoFocus 
             />
+          <Form.Control.Feedback type="invalid">O título da tarefa é obrigatório.</Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Descrição</Form.Label>
