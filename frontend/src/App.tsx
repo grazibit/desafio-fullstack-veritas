@@ -49,7 +49,13 @@ function App() {
   useEffect(() => {
     fetch('http://localhost:8080/tasks')
       .then(response => response.json())
-      .then(data => setTasks(data))
+      .then(data => {
+        if (!data){
+          setTasks([]);
+        } else {
+          setTasks(data);
+        } 
+      })
       .catch(error => console.error('Erro ao buscar tarefas:', error));
   }, []);
 
@@ -57,7 +63,7 @@ function App() {
     const newTask = {
       Title: title,
       Description: description,
-      Status: "A FAZER"
+      Status: "A Fazer" 
     };
 
     fetch('http://localhost:8080/tasks', {
@@ -92,6 +98,33 @@ function App() {
     .catch(error => console.error('Erro ao atualizar tarefa:', error));
   };
 
+  const handleDropTask = (taskId: number, newStatus: string) => {
+    const taskToMove = tasks.find(t => t.ID === taskId);
+    
+    if (!taskToMove || taskToMove.Status === newStatus) return;
+
+    setTasks(prevTasks => prevTasks.map(task => 
+        task.ID === taskId ? { ...task, Status: newStatus } : task
+    ));
+
+    const updatedTask = { ...taskToMove, Status: newStatus };
+    
+    fetch(`http://localhost:8080/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTask),
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const erroGo = await response.text();
+            console.error('O Go recusou a atualização! Motivo:', erroGo);
+        } else {
+            console.log('Backend atualizado com sucesso para:', newStatus);
+        }
+    })
+    .catch(error => console.error('Erro ao mover tarefa:', error));
+  };
+
   const deleteTask = (id: number) => {
     fetch(`http://localhost:8080/tasks/${id}`, { method: 'DELETE' })
     .then(response => {
@@ -103,15 +136,14 @@ function App() {
   return (
     <Container className="mt-5">
       <Row>
-        <KanbanColumn title="A FAZER" tasks={tasks.filter(t => t.Status === "A FAZER")} onViewClick={openViewModal} onAddClick={handleShow} />
-        <KanbanColumn title="EM PROGRESSO" tasks={tasks.filter(t => t.Status === "EM PROGRESSO")} onViewClick={openViewModal} />
-        <KanbanColumn title="CONCLUÍDAS" tasks={tasks.filter(t => t.Status === "CONCLUÍDAS")} onViewClick={openViewModal} />
+        <KanbanColumn title="A Fazer" tasks={tasks.filter(t => t.Status === "A Fazer")} onViewClick={openViewModal} onAddClick={handleShow} onDropTask={handleDropTask} />
+        <KanbanColumn title="Em Progresso" tasks={tasks.filter(t => t.Status === "Em Progresso")} onViewClick={openViewModal} onDropTask={handleDropTask} />
+        <KanbanColumn title="Concluídas" tasks={tasks.filter(t => t.Status === "Concluídas")} onViewClick={openViewModal} onDropTask={handleDropTask} />
       </Row>
 
       <CreateTaskModal show={showModal} handleClose={handleClose} handleSave={createTask} />
       <EditTaskModal show={showEditModal} handleClose={closeEditModal} handleSave={updateTask} task={taskToEdit} />
-      <ViewTaskModal show={showViewModal} handleClose={closeViewModal} task={taskToView} onEditClick={openEditModal} onDelete={deleteTask} 
-      />
+      <ViewTaskModal show={showViewModal} handleClose={closeViewModal} task={taskToView} onEditClick={openEditModal} onDelete={deleteTask} />
     </Container>
   );
 }

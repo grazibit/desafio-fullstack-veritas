@@ -17,12 +17,10 @@ function ViewTaskModal({ show, handleClose, task, onEditClick, onDelete }: ViewT
             <Modal.Header closeButton>
                 <div className="d-flex w-100 justify-content-between align-items-center me-3">
                     <Modal.Title>{task.title}</Modal.Title>
-                    
                     <Dropdown align="end">
                         <Dropdown.Toggle variant="link" className="text-dark p-0 border-0 text-decoration-none shadow-none" id="dropdown-actions">
                             <i className="bi bi-three-dots-vertical fs-4"></i>
                         </Dropdown.Toggle>
-
                         <Dropdown.Menu>
                             <Dropdown.Item onClick={() => {
                                 handleClose(); 
@@ -30,9 +28,7 @@ function ViewTaskModal({ show, handleClose, task, onEditClick, onDelete }: ViewT
                             }}>
                                 Editar
                             </Dropdown.Item>
-                            
                             <Dropdown.Divider />
-                            
                             <Dropdown.Item className="text-danger" onClick={() => {
                                 handleClose();
                                 onDelete(task.id);
