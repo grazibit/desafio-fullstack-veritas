@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	loadTasks()
 	router := enableCORS(setupRoutes())
 
 	server := &http.Server{

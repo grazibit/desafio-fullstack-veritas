@@ -71,6 +71,7 @@ func (h Handler) create(w http.ResponseWriter, r *http.Request) {
 	newTask.ID = maxID + 1
 
 	tasks = append(tasks, newTask)
+	saveTasks()
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(newTask)
@@ -102,6 +103,7 @@ func (h Handler) update(w http.ResponseWriter, r *http.Request) {
 	for i, task := range tasks {
 		if task.ID == id {
 			tasks[i] = updatedTask
+			saveTasks()
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(updatedTask)
@@ -123,6 +125,7 @@ func (h Handler) delete(w http.ResponseWriter, r *http.Request) {
 	for i, task := range tasks {
 		if task.ID == id {
 			tasks = append(tasks[:i], tasks[i+1:]...)
+			saveTasks()
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
