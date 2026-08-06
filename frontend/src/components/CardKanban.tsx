@@ -16,14 +16,13 @@ function CardKanban(props: CardKanbanProps) {
     }
 
     return (
-        <Card border="primary" className="mb-3 shadow-sm" style={{ width: '18rem', cursor: 'pointer' }} 
+        <Card border="primary" className="mb-3 shadow-sm" style={{ cursor: 'pointer' }} 
             draggable onDragStart={handleDragStart}
             onClick={() => props.onViewClick(props.id, props.title, props.description, props.status)}>
-            <Card.Body>
-                <Card.Title>{props.title}</Card.Title>
-                <Card.Text className="text-muted text-truncate">
-                    {props.description}
-                </Card.Text>
+            <Card.Body className="p-3">
+                <h6 className="mb-0 fw-semibold text-dark text-start" style={{ textAlign: 'left' }}>
+                    {props.title}
+                </h6>
             </Card.Body>
         </Card>
     );

@@ -1,5 +1,6 @@
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Button from 'react-bootstrap/Button';
 
 interface ViewTaskModalProps {
     show: boolean;
@@ -15,28 +16,34 @@ function ViewTaskModal({ show, handleClose, task, onEditClick, onDelete }: ViewT
     return (
         <Modal show={show} onHide={handleClose} size="lg">
             <Modal.Header closeButton>
-                <div className="d-flex w-100 justify-content-between align-items-center me-3">
-                    <Modal.Title>{task.title}</Modal.Title>
-                    <Dropdown align="end">
-                        <Dropdown.Toggle variant="link" className="text-dark p-0 border-0 text-decoration-none shadow-none" id="dropdown-actions">
-                            <i className="bi bi-three-dots-vertical fs-4"></i>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => {
-                                handleClose(); 
-                                onEditClick(task.id, task.title, task.description); 
-                            }}>
-                                Editar
-                            </Dropdown.Item>
-                            <Dropdown.Divider />
-                            <Dropdown.Item className="text-danger" onClick={() => {
+                <div className="d-flex w-100 justify-content-between align-items-center pe-3">
+                    <Modal.Title className="fw-bold mb-0 text-start">
+                        {task.title}
+                    </Modal.Title>
+                    <div className="d-flex align-items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="outline-primary" size="sm" className="d-flex align-items-center gap-1 px-2 py-1"
+                            style={{ fontSize: '0.85rem' }}
+                            onClick={() => {
                                 handleClose();
-                                onDelete(task.id);
-                            }}>
-                                 Excluir
-                            </Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
+                                onEditClick(task.id, task.title, task.description);
+                            }}>Editar</Button>
+                        <Dropdown align="end">
+                            <Dropdown.Toggle id="dropdown-custom-components" variant="light" size="sm"
+                                className="text-secondary p-1 d-flex align-items-center justify-content-center bg-transparent border-0 shadow-none"
+                                style={{ width: '32px', height: '32px', cursor: 'pointer' }}>
+                                <span style={{ fontSize: '1.4rem', fontWeight: 'bold', lineHeight: 1 }}>⋮</span>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className="shadow-sm border-0" style={{ fontSize: '0.85rem' }}>
+                                <Dropdown.Item
+                                    className="text-danger fw-medium"
+                                    onClick={() => {
+                                        handleClose();
+                                        onDelete(task.id);
+                                    }}>Excluir
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </div>
                 </div>
             </Modal.Header>
             <Modal.Body>
